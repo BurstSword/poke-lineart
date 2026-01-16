@@ -50,21 +50,39 @@ export class ImageProcessorService {
 
   constructor() {
     this.cvReadyPromise = new Promise((resolve) => {
-      if ((window as any).cv && cv['onRuntimeInitialized']) {
-        cv['onRuntimeInitialized'] = () => {
-          this.cvReady = true;
-          resolve();
-        };
-      } else {
+      const markReady = () => {
         this.cvReady = true;
         resolve();
+      };
+      const hasCv = () => typeof (globalThis as any).cv !== 'undefined';
+      const isReady = () => hasCv() && typeof cv.Mat === 'function';
+
+      if (isReady()) {
+        markReady();
+        return;
       }
+
+      if (hasCv()) {
+        cv['onRuntimeInitialized'] = () => markReady();
+        return;
+      }
+
+      const interval = window.setInterval(() => {
+        if (isReady()) {
+          window.clearInterval(interval);
+          markReady();
+        }
+      }, 50);
     });
   }
 
   private async ensureCvReady(): Promise<void> {
-    if (this.cvReady) return;
-    await this.cvReadyPromise;
+    if (!this.cvReady) {
+      await this.cvReadyPromise;
+    }
+    if (typeof (globalThis as any).cv === 'undefined' || typeof cv.Mat !== 'function') {
+      throw new Error('OpenCV no está disponible.');
+    }
   }
 
   /** Grupos de presets por tipo */
@@ -107,31 +125,49 @@ export class ImageProcessorService {
       }
     ];
 
+    const polaroidDefaults: LineArtConfig['polaroidOptions'] = {
+      fit: 'cover',
+      zoom: 1,
+      offsetX: 0,
+      offsetY: 0
+    };
+
     const polaroidPresets: PresetItem[] = [
       {
         label: 'Suave',
         frameType: 'polaroid',
-        config: { blockSize: 15, C: 5, lowThresh: 50, highThresh: 120, dilationSize: 1 }
-      },
-      {
-        label: 'Medio',
-        frameType: 'polaroid',
-        config: { blockSize: 21, C: 10, lowThresh: 30, highThresh: 90, dilationSize: 2 }
-      },
-      {
-        label: 'Coloring',
-        frameType: 'polaroid',
         config: {
-          blockSize: 21, C: 10, lowThresh: 40, highThresh: 120, dilationSize: 2,
-          cleanOutlines: true
+          blockSize: 15,
+          C: 5,
+          lowThresh: 50,
+          highThresh: 120,
+          dilationSize: 1,
+          polaroidOptions: { ...polaroidDefaults }
         }
       },
       {
         label: 'Medio',
         frameType: 'polaroid',
         config: {
-          blockSize: 21, C: 10, lowThresh: 30, highThresh: 90, dilationSize: 2,
-          polaroidOptions: { fit: 'cover', zoom: 1, offsetX: 0, offsetY: 0 }
+          blockSize: 21,
+          C: 10,
+          lowThresh: 30,
+          highThresh: 90,
+          dilationSize: 2,
+          polaroidOptions: { ...polaroidDefaults }
+        }
+      },
+      {
+        label: 'Coloring',
+        frameType: 'polaroid',
+        config: {
+          blockSize: 21,
+          C: 10,
+          lowThresh: 40,
+          highThresh: 120,
+          dilationSize: 2,
+          cleanOutlines: true,
+          polaroidOptions: { ...polaroidDefaults }
         }
       },
 
