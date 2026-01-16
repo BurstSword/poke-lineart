@@ -1,0 +1,351 @@
+<ion-header>
+  <ion-toolbar class="koi-toolbar">
+    <div class="koi-header">
+      <div class="koi-logo-ring">
+        <img src="../../assets/icon.png" alt="Artesanías Koi" />
+      </div>
+
+      <div class="koi-header-text">
+        <h1 class="koi-header-title">Line Art Converter</h1>
+        <div class="koi-header-sub">Convierte cartas en líneas para grabado</div>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding koi-content">
+
+  <div class="koi-circle-frame"></div>
+
+  <!-- STEPPER -->
+  <div class="koi-stepper">
+    <div class="koi-step clickable" role="button" tabindex="0" [class.active]="currentStep >= 1"
+      [class.current]="currentStep === 1" (click)="goToStep(1)" (keydown.enter)="goToStep(1)"
+      (keydown.space)="goToStep(1)">
+      <div class="koi-step-circle">1</div>
+      <span style="color: black;">Imagen</span>
+    </div>
+
+    <div class="koi-step-line"></div>
+
+    <div class="koi-step clickable" role="button" tabindex="0" [class.active]="currentStep >= 2"
+      [class.current]="currentStep === 2" (click)="goToStep(2)" (keydown.enter)="goToStep(2)"
+      (keydown.space)="goToStep(2)">
+      <div class="koi-step-circle">2</div>
+      <span style="color: black;">Presets</span>
+    </div>
+
+    <div class="koi-step-line"></div>
+
+    <div class="koi-step clickable" role="button" tabindex="0" [class.active]="currentStep >= 3"
+      [class.current]="currentStep === 3" (click)="goToStep(3)" (keydown.enter)="goToStep(3)"
+      (keydown.space)="goToStep(3)">
+      <div class="koi-step-circle">3</div>
+      <span style="color: black;">Ajustes</span>
+    </div>
+  </div>
+
+  <!-- PASO 1 -->
+  <ion-card class="koi-card" *ngIf="currentStep === 1">
+    <ion-card-header>
+      <ion-card-title>Sube tu carta</ion-card-title>
+      <ion-card-subtitle>
+        Elige una foto clara y centrada de la carta que quieras convertir.
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div class="koi-input-wrapper">
+        <label class="koi-input-label">Imagen</label>
+
+        <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)"
+          class="koi-file-input-hidden" />
+
+        <div class="koi-input-buttons" *ngIf="!originalImage">
+          <ion-button size="small" fill="outline" class="koi-secondary-button" (click)="openFilePicker()">
+            Seleccionar imagen
+          </ion-button>
+          <span class="koi-hint">PNG o JPG, mejor con buena iluminación.</span>
+        </div>
+
+        <div class="koi-input-buttons" *ngIf="originalImage">
+          <ion-button size="small" fill="outline" class="koi-secondary-button koi-danger-button" (click)="resetImage()">
+            Eliminar imagen
+          </ion-button>
+          <span class="koi-file-name">{{ selectedFile?.name }}</span>
+        </div>
+
+        <ion-button expand="block" class="ion-margin-top koi-main-button" [disabled]="!selectedFile || processing"
+          (click)="generateDefaultPresets()">
+          {{ processing ? 'Generando estilos…' : 'Generar estilos' }}
+        </ion-button>
+
+        <div class="images-container">
+          <div class="image-wrapper" *ngIf="originalImage">
+            <h3>Original</h3>
+            <img [src]="originalImage" alt="Original" />
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error">
+        {{ errorMessage }}
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- PASO 2 -->
+  <div *ngIf="currentStep === 2 && selectedFile" class="koi-main-layout">
+    <!-- Columna izquierda vista previa -->
+    <div class="koi-preview-column">
+      <div class="preview-header">
+        <h2 style="color: black;">Vista previa</h2>
+        <p style="color: black;">Elige un preset para verlo como versión base.</p>
+      </div>
+
+      <div class="images-container">
+        <div class="image-wrapper" *ngIf="processedImage">
+          <h3 style="color: black;">Versión base</h3>
+          <img [src]="processedImage" alt="Preset seleccionado" />
+        </div>
+
+        <div class="image-wrapper" *ngIf="!processedImage">
+          <h3 style="color: black;">Versión base</h3>
+          <div class="koi-empty-preview">
+            Genera o selecciona un preset para ver la vista previa.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: TIPOS COLAPSABLES -->
+    <div class="koi-variants-column">
+
+      <div class="variants-header">
+        <h2 style="color: black;">Tipos de presets</h2>
+        <p style="color: black;">
+          Abre un tipo para ver sus estilos. Al abrirlo por primera vez se generarán automáticamente.
+        </p>
+      </div>
+
+      <ion-accordion-group [value]="openedGroupId" (ionChange)="onGroupChange($event)" class="koi-accordion-group">
+        <ion-accordion *ngFor="let g of presetGroups" [value]="g.id" class="koi-accordion">
+          <div *ngIf="g.id === 'polaroid'" class="koi-print-hint">
+            Tamaño de impresión aproximado: <strong>8.8 × 10.7 cm</strong> (Polaroid clásica)
+          </div>
+
+          <ion-item slot="header" lines="full" class="koi-accordion-header">
+            <ion-label style="color: black;">
+              <strong>{{ g.label }}</strong>
+            </ion-label>
+          </ion-item>
+
+          <div slot="content" class="koi-accordion-content">
+
+            <!-- Loading -->
+            <div *ngIf="groupLoading[g.id]" class="koi-loading-row">
+              Generando presets de {{ g.label }}…
+            </div>
+
+            <!-- Variants del grupo -->
+            <div class="variants-strip" *ngIf="!groupLoading[g.id] && groupVariants[g.id]?.length">
+              <button type="button" class="variant-card" *ngFor="let v of groupVariants[g.id]; let i = index"
+                [class.active]="isVariantActive(g.id, i)" (click)="selectGroupVariant(g.id, i)">
+                <div style="color: black;" class="variant-label">{{ v.label }}</div>
+                <img [src]="v.dataUrl" alt="Variant {{ v.label }}" />
+              </button>
+            </div>
+
+            <!-- Empty state por si algo falla -->
+            <div *ngIf="!groupLoading[g.id] && !groupVariants[g.id]?.length" class="koi-empty-variants">
+              No hay presets aún para este tipo.
+              <ion-button size="small" fill="outline" class="koi-secondary-button" (click)="forceGenerateGroup(g.id)">
+                Generar este tipo
+              </ion-button>
+            </div>
+
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+
+      <div class="koi-step-actions">
+        <ion-button fill="outline" class="koi-secondary-button" (click)="goToStep(1)">
+          Volver
+        </ion-button>
+
+        <ion-button class="koi-main-button" [disabled]="!processedImage" (click)="goToCustomFromSelected()">
+          Afinar líneas
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div *ngIf="currentStep === 3 && selectedFile" class="koi-step2-layout">
+    <ion-card class="koi-card koi-card-step2">
+      <ion-card-header>
+        <ion-card-title>Ajustes finales</ion-card-title>
+        <ion-card-subtitle>
+          Parte del preset elegido y afina las líneas a tu gusto.
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="koi-edit-layout">
+
+          <!-- Columna izquierda -->
+          <div class="koi-edit-preview">
+            <div class="images-container">
+              <div class="image-wrapper" *ngIf="processedImage">
+                <h3>Vista final</h3>
+                <img [src]="processedImage" alt="Vista final" />
+
+                <ion-button expand="block" class="ion-margin-top koi-main-button" (click)="downloadImage()">
+                  Descargar PNG
+                </ion-button>
+
+                <ion-button expand="block" fill="outline" class="ion-margin-top koi-secondary-button"
+                  (click)="shareImage()" [disabled]="!processedImage">
+                  Compartir
+                </ion-button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna derecha -->
+          <div class="koi-edit-controls">
+            <div class="koi-custom-accordion-wrapper">
+
+              <ion-accordion-group class="koi-accordion-group custom-accordion" [multiple]="true"
+                [value]="openedCustomSections" (ionChange)="onCustomAccordionChange($event)">
+
+                <!-- Acordeón 1: Líneas -->
+                <ion-accordion value="lines" class="koi-accordion custom-accordion-item">
+                  <ion-item slot="header" lines="full" class="koi-accordion-header">
+                    <ion-label style="color: black;">
+                      <strong>Editor de líneas</strong>
+                    </ion-label>
+                  </ion-item>
+
+                  <div slot="content" class="koi-accordion-content">
+                    <div class="custom-controls">
+                      <div class="custom-header">
+                        <h3>Editor Custom</h3>
+                        <span>Los cambios se aplican en tiempo real a la vista final.</span>
+                      </div>
+
+                      <div class="slider-row">
+                        <label>blockSize (detalle): {{ customConfig.blockSize }}</label>
+                        <input type="range" min="3" max="35" step="2" [(ngModel)]="customConfig.blockSize"
+                          (ngModelChange)="onCustomConfigChange()" />
+                      </div>
+
+                      <div class="slider-row">
+                        <label>C (contraste): {{ customConfig.C }}</label>
+                        <input type="range" min="0" max="20" step="1" [(ngModel)]="customConfig.C"
+                          (ngModelChange)="onCustomConfigChange()" />
+                      </div>
+
+                      <div class="slider-row">
+                        <label>lowThresh (Canny): {{ customConfig.lowThresh }}</label>
+                        <input type="range" min="0" max="100" step="5" [(ngModel)]="customConfig.lowThresh"
+                          (ngModelChange)="onCustomConfigChange()" />
+                      </div>
+
+                      <div class="slider-row">
+                        <label>highThresh (Canny): {{ customConfig.highThresh }}</label>
+                        <input type="range" min="50" max="200" step="5" [(ngModel)]="customConfig.highThresh"
+                          (ngModelChange)="onCustomConfigChange()" />
+                      </div>
+
+                      <div class="slider-row">
+                        <label>dilationSize (grosor): {{ customConfig.dilationSize }}</label>
+                        <input type="range" min="1" max="5" step="1" [(ngModel)]="customConfig.dilationSize"
+                          (ngModelChange)="onCustomConfigChange()" />
+                      </div>
+
+                      <div class="checkbox-row">
+                        <label>
+                          <input type="checkbox" [(ngModel)]="customConfig.laserFriendly"
+                            (ngModelChange)="onCustomConfigChange()" />
+                          Modo “laser friendly” (limpia ruido extra)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </ion-accordion>
+
+                <!-- Acordeón 2: Polaroid (solo si aplica) -->
+                <ion-accordion *ngIf="customConfig.frameType === 'polaroid'" value="polaroid"
+                  class="koi-accordion custom-accordion-item">
+                  <ion-item slot="header" lines="full" class="koi-accordion-header">
+                    <ion-label style="color: black;">
+                      <strong>Ajustes Polaroid</strong>
+                    </ion-label>
+                  </ion-item>
+
+                  <div slot="content" class="koi-accordion-content">
+                    <div class="custom-controls">
+                      <div class="custom-header">
+                        <h3>Ajustes Polaroid</h3>
+                        <span>Rellena el marco sin huecos y ajusta el encuadre.</span>
+                        <small class="koi-print-hint">
+                          Impresión aprox: 8.6 × 10.8 cm (estándar)
+                        </small>
+                      </div>
+
+                      <div class="slider-row">
+                        <label>Modo de ajuste</label>
+                        <div class="koi-fit-toggle">
+                          <button type="button" class="koi-fit-chip"
+                            [class.active]="(customConfig.polaroidOptions?.fit ?? 'cover') === 'cover'"
+                            (click)="setPolaroidFit('cover')">
+                            Rellenar recortando
+                          </button>
+
+                          <button type="button" class="koi-fit-chip"
+                            [class.active]="(customConfig.polaroidOptions?.fit ?? 'cover') === 'stretch'"
+                            (click)="setPolaroidFit('stretch')">
+                            Rellenar estirando
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="slider-row">
+                        <label>Zoom polaroid: {{ customConfig.polaroidOptions?.zoom ?? 1 }}</label>
+                        <input type="range" min="1" max="2.5" step="0.1"
+                          [ngModel]="customConfig.polaroidOptions?.zoom ?? 1"
+                          (ngModelChange)="setPolaroidZoom($event)" />
+                      </div>
+
+                      <div class="slider-row">
+                        <label>Mover horizontal: {{ customConfig.polaroidOptions?.offsetX ?? 0 }}</label>
+                        <input type="range" min="-100" max="100" step="5"
+                          [ngModel]="customConfig.polaroidOptions?.offsetX ?? 0"
+                          (ngModelChange)="setPolaroidOffsetX($event)" />
+                      </div>
+
+                      <div class="slider-row">
+                        <label>Mover vertical: {{ customConfig.polaroidOptions?.offsetY ?? 0 }}</label>
+                        <input type="range" min="-100" max="100" step="5"
+                          [ngModel]="customConfig.polaroidOptions?.offsetY ?? 0"
+                          (ngModelChange)="setPolaroidOffsetY($event)" />
+                      </div>
+                    </div>
+                  </div>
+                </ion-accordion>
+
+              </ion-accordion-group>
+
+            </div>
+          </div>
+        </div>
+
+        <ion-button fill="outline" class="ion-margin-top koi-secondary-button" (click)="goToStep(2)">
+          Volver a presets
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+</ion-content>

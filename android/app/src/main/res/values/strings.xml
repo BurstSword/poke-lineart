@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Line Art Converter</string>
+    <string name="title_activity_main">Line Art Converter</string>
+    <string name="package_name">com.burst.lineart</string>
+    <string name="custom_url_scheme">com.burst.lineartconverter</string>
+</resources>

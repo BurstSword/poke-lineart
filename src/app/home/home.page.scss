@@ -1,0 +1,691 @@
+.koi-content {
+  position: relative;
+  color: #111;
+
+  /* Color base papel */
+  --background: #f8f6f2;
+  background-color: #f8f6f2;
+
+  /* Patrón suave tipo papel + líneas */
+  background-image:
+    repeating-linear-gradient(135deg,
+      rgba(0, 0, 0, 0.015) 0px,
+      rgba(0, 0, 0, 0.015) 1px,
+      transparent 1px,
+      transparent 5px),
+    radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.04) 0, transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.03) 0, transparent 55%);
+  background-attachment: fixed;
+}
+
+.koi-content::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+
+  background-image:
+    radial-gradient(circle at 0 0, rgba(0, 0, 0, 0.06) 0, transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.04) 0, transparent 55%),
+    repeating-radial-gradient(circle at 0 100%,
+      rgba(0, 0, 0, 0.03) 0,
+      rgba(0, 0, 0, 0.03) 1px,
+      transparent 1px,
+      transparent 10px);
+  opacity: 0.7;
+}
+
+.koi-toolbar {
+  --background: #111;
+  --color: #f8f6f2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  min-height: 60px;
+}
+
+.koi-header {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Anillo para el logo, tipo sello */
+.koi-logo-ring {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 2px solid #f8f6f2;
+  padding: 2px;
+  background: #f8f6f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.koi-logo-ring img {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+/* Bloque de texto */
+.koi-header-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Título principal de la app */
+.koi-header-title {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Subtítulo/descripcion */
+.koi-header-sub {
+  font-size: 0.7rem;
+  opacity: 0.85;
+  letter-spacing: 0.04em;
+}
+
+/* En pantallas muy pequeñas */
+@media (max-width: 360px) {
+  .koi-header {
+    gap: 0.5rem;
+  }
+
+  .koi-header-title {
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  .koi-header-sub {
+    display: none;
+  }
+}
+
+// Big circle in background to echo the logo
+.koi-circle-frame {
+  position: absolute;
+  top: -80px;
+  right: -40px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 0, 0, 0.08);
+  z-index: -1;
+}
+
+// Card styling
+.koi-card {
+  border-radius: 18px;
+  border: 2px solid #111;
+  box-shadow: 4px 4px 0 #111;
+  background: #fffdf8;
+}
+
+.koi-card ion-card-title {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.koi-card ion-card-subtitle {
+  font-size: 0.8rem;
+}
+
+// File input wrapper
+.koi-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.koi-input-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Input real oculto */
+.koi-file-input-hidden {
+  display: none;
+}
+
+.koi-input-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.koi-hint {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.koi-file-name {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+// Main CTA button
+.koi-main-button {
+  --background: #111111;
+  --background-hover: #222222;
+  --background-activated: #000000;
+  --background-focused: #111111;
+
+  --color: #f8f6f2;
+  --color-hover: #ffffff;
+  --color-activated: #ffffff;
+  --color-focused: #f8f6f2;
+
+  --border-radius: 999px;
+  --box-shadow: 0 3px 0 #000;
+
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+// Secondary outline style
+.koi-secondary-button {
+  --background: transparent;
+  --color: #111111;
+  --color-hover: #000000;
+  --border-color: #111111;
+  --border-radius: 999px;
+
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.koi-danger-button {
+  --color: #b3261e;
+  --border-color: #b3261e;
+}
+
+// Custom controls
+.custom-controls {
+  margin-top: 1rem;
+  border-top: 1px solid #e0d7c7;
+  padding-top: 0.75rem;
+}
+
+.custom-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-header h3 {
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.custom-header span {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
+}
+
+.slider-row label {
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+}
+
+.slider-row input[type='range'] {
+  width: 100%;
+  margin: 0.1rem 0 0.4rem;
+
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+/* Track */
+.slider-row input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: #e0d7c7;
+  border: 1px solid #b3a897;
+}
+
+.slider-row input[type='range']::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: #e0d7c7;
+  border: 1px solid #b3a897;
+}
+
+/* Thumb */
+.slider-row input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid #f8f6f2;
+  margin-top: -6px;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.slider-row input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid #f8f6f2;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.slider-row input[type='range']::-moz-range-progress {
+  background: #111;
+  height: 6px;
+  border-radius: 999px;
+}
+
+.slider-row input[type='range']:focus {
+  outline: none;
+}
+
+.slider-row input[type='range']:focus::-webkit-slider-runnable-track {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.18);
+}
+
+.checkbox-row {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.checkbox-row label {
+  font-size: 0.8rem;
+}
+
+.error {
+  color: #c62828;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+}
+
+// Layout: preview + presets columns
+.koi-main-layout {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .koi-main-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.koi-preview-column,
+.koi-variants-column {
+  flex: 1;
+}
+
+// Preview area
+.preview-header h2,
+.variants-header h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.preview-header p,
+.variants-header p {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+// Image areas
+.images-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .images-container {
+    flex-direction: row;
+  }
+}
+
+.image-wrapper {
+  flex: 1;
+  text-align: center;
+}
+
+.image-wrapper h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  margin-bottom: 0.35rem;
+}
+
+.image-wrapper img {
+  max-width: 100%;
+  border: 2px solid #111;
+  border-radius: 16px;
+  background: #fff;
+}
+
+// Variants slider
+.koi-variants-column {
+  margin-top: 0.25rem;
+}
+
+.variants-strip {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+  scroll-snap-type: x mandatory;
+}
+
+.variant-card {
+  scroll-snap-align: start;
+  min-width: 150px;
+  max-width: 200px;
+  border-radius: 16px;
+  border: 1px solid #c8c0b0;
+  background: #fffdf8;
+  padding: 0.5rem 0.6rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    border-color 120ms ease-out,
+    background-color 120ms ease-out;
+  overflow: visible;
+  position: relative;
+}
+
+.variant-card:hover {
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.24);
+}
+
+.variant-card.active {
+  border-color: #111;
+  border-width: 2px;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.28);
+  background: #ffffff;
+}
+
+.variant-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.variant-card img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #222;
+  background: #fff;
+}
+
+.koi-step2-layout {
+  margin-top: 0.5rem;
+}
+
+.koi-step-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Layout del editor (Paso 3) */
+.koi-edit-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Columna de preview y columna de controles */
+.koi-edit-preview,
+.koi-edit-controls {
+  flex: 1;
+}
+
+/* En tablet/escritorio, lado a lado */
+@media (min-width: 900px) {
+  .koi-card-step2 {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .koi-edit-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .koi-edit-preview {
+    padding-right: 0.75rem;
+    border-right: 1px solid #e0d7c7;
+  }
+
+  .koi-edit-controls {
+    padding-left: 0.75rem;
+  }
+}
+
+/* STEPPER */
+.koi-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+}
+
+.koi-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.4;
+}
+
+.koi-step.active {
+  opacity: 0.8;
+}
+
+.koi-step.current {
+  opacity: 1;
+}
+
+.koi-step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2px solid #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background: #fffdf8;
+}
+
+.koi-step.current .koi-step-circle {
+  background: #111;
+  color: #f8f6f2;
+}
+
+.koi-step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* Clickable steps */
+.koi-step.clickable {
+  cursor: pointer;
+}
+
+/* Selector tipo preset */
+.koi-preset-type-item {
+  --background: transparent;
+  margin-top: 8px;
+}
+
+.koi-accordion-group {
+  margin-top: 0.75rem;
+}
+
+.koi-accordion {
+  border: 2px solid #111;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fffdf8;
+  box-shadow: 3px 3px 0 #111;
+  margin-bottom: 0.75rem;
+}
+
+.koi-accordion-header {
+  --background: #fffdf8;
+}
+
+.koi-accordion-content {
+  padding: 0.75rem 0.75rem 0.25rem;
+}
+
+.koi-loading-row {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  padding: 0.25rem 0;
+}
+
+.koi-empty-variants {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.koi-empty-preview {
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 0.8rem;
+  opacity: 0.75;
+  background: #fff;
+}
+
+.koi-print-hint {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.koi-fit-toggle {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.koi-fit-chip {
+  border: 1px solid #111;
+  background: #fffdf8;
+  color: #111;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.koi-fit-chip.active {
+  background: #111;
+  color: #f8f6f2;
+}
+
+.koi-print-hint {
+  display: inline-block;
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+
+.koi-custom-accordion-wrapper {
+  width: 100%;
+}
+
+.custom-accordion {
+  background: transparent;
+}
+
+/* Estética consistente con tu UI */
+.custom-accordion-item {
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+  border: 1px solid #d7cfbf;
+  background: #fffdf8;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+}
+
+.custom-accordion-item .koi-accordion-header {
+  --background: transparent;
+  --min-height: 44px;
+}
+
+.custom-accordion-item ion-item {
+  --padding-start: 12px;
+  --inner-padding-end: 10px;
+}
+
+.custom-accordion-item .koi-accordion-content {
+  padding: 0.25rem 0.75rem 0.75rem;
+}
+
+/* Reduce un pelín el aire interno para evitar scroll extra */
+.custom-accordion-item .custom-controls {
+  margin-top: 0.25rem;
+  border-top: none;
+  padding-top: 0;
+}
